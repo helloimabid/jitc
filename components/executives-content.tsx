@@ -17,7 +17,7 @@ export default function ExecutivesContent() {
     const fetchExecutives = async () => {
       const supabase = createClient()
 
-      const { data, error } = await supabase.from("executives").select("*").order("created_at", { ascending: false })
+      const { data, error } = await supabase.from("executives").select("*").order("display_order", { ascending: true })
 
       if (data) {
         setExecutives(data)
@@ -100,7 +100,6 @@ export default function ExecutivesContent() {
                         rel="noopener noreferrer"
                         className="text-gray-400 hover:text-primary transition-colors"
                         title="LinkedIn"
-
                       >
                         <Instagram size={18} />
                       </a>
@@ -118,8 +117,6 @@ export default function ExecutivesContent() {
             ))}
           </div>
         )}
-
-        
       </div>
     </section>
   )
