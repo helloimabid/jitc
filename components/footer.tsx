@@ -79,11 +79,25 @@ export default function Footer() {
 
           <div>
             <h4 className="text-white font-medium mb-4">Contact</h4>
-            <address className="not-italic text-gray-400">
+            <address className="not-italic text-gray-400 mb-4">
               <p>St. Joseph Higher Secondary School</p>
               <p>97 Asad Avenue, Dhaka-1207</p>
               <p className="mt-2">Email: jitc@sjs.edu.bd</p>
             </address>
+
+            <div className="w-full h-48 rounded-lg overflow-hidden mt-4">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.9012086869374!2d90.37546491498136!3d23.75089798458698!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b33cffc3fb%3A0x4a826f475fd312af!2sSt.%20Joseph%20Higher%20Secondary%20School!5e0!3m2!1sen!2sus!4v1648132133358!5m2!1sen!2sus"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="St. Joseph Higher Secondary School Location"
+                className="grayscale hover:grayscale-0 transition-all duration-300"
+              ></iframe>
+            </div>
           </div>
         </div>
 
