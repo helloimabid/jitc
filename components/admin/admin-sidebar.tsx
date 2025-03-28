@@ -318,13 +318,13 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
             <div
               className={`p-4 border-t border-gray-200 dark:border-gray-800 ${collapsed && !isMobile ? "hidden" : "block"}`}
             >
-              <button
+              {/* <button
                 onClick={handleSignOut}
                 className="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 w-full group"
               >
                 <LogOut className="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" />
                 {(!collapsed || isMobile) && <span>Sign Out</span>}
-              </button>
+              </button> */}
             </div>
           </div>
         </motion.div>
