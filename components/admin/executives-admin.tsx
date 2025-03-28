@@ -930,7 +930,7 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                         type="number"
                         id="display_order"
                         name="display_order"
-                        value={currentExecutive.position}
+                        value={currentExecutive.display_order}
                         onChange={handleInputChange}
                         required
                         className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2"
