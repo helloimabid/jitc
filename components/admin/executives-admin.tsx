@@ -69,17 +69,13 @@ function SortableExecutiveRow({
     <tr
       ref={setNodeRef}
       style={style}
-      className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150"
+      {...attributes}
+      {...listeners}
+      className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150 cursor-grab active:cursor-grabbing"
     >
       <td className="px-3 sm:px-6 py-4">
         <div className="flex items-center">
-          <button
-            className="cursor-grab active:cursor-grabbing p-1 mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-            {...attributes}
-            {...listeners}
-          >
-            <GripVertical className="h-5 w-5" />
-          </button>
+          <GripVertical className="h-5 w-5 text-gray-400 mr-2" />
           <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span>
         </div>
       </td>
@@ -103,11 +99,11 @@ function SortableExecutiveRow({
       <td className="hidden md:table-cell px-3 sm:px-6 py-4">
         <div className="text-sm text-gray-500 dark:text-gray-400">{executive.email}</div>
       </td>
-      <td className="px-3 sm:px-6 py-4 text-sm font-medium">
+      <td className="px-3 sm:px-6 py-4 text-sm font-medium" onClick={(e) => e.stopPropagation()}>
         <div className="flex space-x-3">
           <button
             onClick={() => onEdit(executive)}
-            className="inline-flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            className="inline-flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer"
             title="Edit executive"
           >
             <Pencil className="h-4 w-4" />
@@ -115,7 +111,7 @@ function SortableExecutiveRow({
           </button>
           <button
             onClick={() => onDelete(executive.id)}
-            className="inline-flex items-center text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+            className="inline-flex items-center text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors cursor-pointer"
             title="Delete executive"
           >
             <Trash2 className="h-4 w-4" />
@@ -145,7 +141,7 @@ function SortableExecutiveCard({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 10 : 0, // Increased z-index for dragging
+    zIndex: isDragging ? 10 : 0,
     position: "relative" as const,
   }
 
@@ -153,18 +149,13 @@ function SortableExecutiveCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-3"
+      {...attributes}
+      {...listeners}
+      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-3 cursor-grab active:cursor-grabbing touch-manipulation"
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center">
-          <button
-            className="touch-manipulation cursor-grab active:cursor-grabbing p-2 mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-md"
-            {...attributes}
-            {...listeners}
-            aria-label="Drag to reorder"
-          >
-            <GripVertical className="h-6 w-6" />
-          </button>
+          <GripVertical className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
           <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">{index + 1}</span>
           {executive.image_url && (
             <div className="flex-shrink-0 h-10 w-10 mr-3">
@@ -180,10 +171,10 @@ function SortableExecutiveCard({
             <p className="text-sm text-gray-500 dark:text-gray-400">{executive.position}</p>
           </div>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => onEdit(executive)}
-            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer"
             title="Edit executive"
           >
             <Pencil className="h-4 w-4" />
@@ -191,7 +182,7 @@ function SortableExecutiveCard({
           </button>
           <button
             onClick={() => onDelete(executive.id)}
-            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors cursor-pointer"
             title="Delete executive"
           >
             <Trash2 className="h-4 w-4" />
@@ -234,8 +225,9 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5, // Reduced distance to start dragging on mobile
+        distance: 5, // Reduced distance to start dragging
         tolerance: 5, // Added tolerance for better touch interaction
+        delay: 100, // Short delay to prevent accidental drags
       },
     }),
     useSensor(KeyboardSensor, {
@@ -617,8 +609,6 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
               {/* Mobile card view */}
               <div className="block sm:hidden">
                 <div className="space-y-0 px-4">
-                  {" "}
-                  {/* Changed from space-y-3 to space-y-0 */}
                   {reorderMode ? (
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                       <SortableContext
@@ -626,8 +616,6 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                         strategy={verticalListSortingStrategy}
                       >
                         <div className="space-y-0">
-                          {" "}
-                          {/* Added container div */}
                           {filteredExecutives.map((executive, index) => (
                             <SortableExecutiveCard
                               key={executive.id}
@@ -650,7 +638,7 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"
+                        className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-3"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex items-center">
