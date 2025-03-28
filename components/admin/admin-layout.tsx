@@ -1,11 +1,13 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase"
 import AdminSidebar from "./admin-sidebar"
 import { Loader2 } from "lucide-react"
-import { AuthChangeEvent, Session } from "@supabase/supabase-js"
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -23,7 +25,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     async function checkAuth() {
       try {
         const { data } = await supabase.auth.getSession()
-        
+
         if (!data.session) {
           // console.log("No session found in client, redirecting to login")
           router.push("/login")
@@ -37,15 +39,17 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
         router.push("/login")
       }
     }
-    
+
     checkAuth()
   }, [router, supabase])
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-    
+    if (!isAuthenticated) return
+
     // Set up auth state change listener only after authentication is confirmed
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, _session: Session | null) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, _session: Session | null) => {
       if (event === "SIGNED_OUT") {
         router.push("/login")
       }
@@ -71,7 +75,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
       <div className="flex flex-1">
         <AdminSidebar />
         <div className="flex-1 ml-0 lg:ml-64 flex flex-col">
-          <main className="flex-1 pt-4 px-4 sm:px-6 pb-8">
+          <main className="flex-1 p-4 sm:px-6 pb-8">
             {title && (
               <div className="mb-4">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
@@ -84,3 +88,4 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     </div>
   )
 }
+
