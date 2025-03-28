@@ -12,9 +12,9 @@ const navItems = [
   { name: "About", path: "/about" },
   { name: "Events", path: "/events" },
   { name: "Moderators", path: "/moderators" }
-  { name: "Executives", path: "/executives" },,
+  { name: "Executives", path: "/executives" },
   { name: "Developers", path: "/developers" },
-  { name: "Contact", path: "/contact" },
+  { name: "Contact", path: "/contact" }
 ]
 
 export default function Navbar() {
