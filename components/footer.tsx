@@ -84,20 +84,7 @@ export default function Footer() {
               <p>97 Asad Avenue, Dhaka-1207</p>
               <p className="mt-2">Email: jitc@sjs.edu.bd</p>
             </address>
-
-            <div className="w-full h-48 rounded-lg overflow-hidden mt-4">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.9012086869374!2d90.37546491498136!3d23.75089798458698!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b33cffc3fb%3A0x4a826f475fd312af!2sSt.%20Joseph%20Higher%20Secondary%20School!5e0!3m2!1sen!2sus!4v1648132133358!5m2!1sen!2sus"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="St. Joseph Higher Secondary School Location"
-                className="grayscale hover:grayscale-0 transition-all duration-300"
-              ></iframe>
-            </div>
+            <div className="w-full h-48 rounded-lg overflow-hidden mt-4"><iframe width="100%" height="600" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=St%20Joseph%20higher%20secondary%20school%20+(St%20Joseph%20higher%20secondary%20school)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"><a href="https://www.gps.ie/collections/drones/">drones ireland</a></iframe></div>
           </div>
         </div>
 
