@@ -2,9 +2,26 @@
 
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase"
-import { Pencil, Trash2, Plus, Check, X, AlertCircle, Upload, Search, User } from 'lucide-react'
+import { Pencil, Trash2, Plus, Check, X, AlertCircle, Upload, Search, User, GripVertical } from 'lucide-react'
 import { v4 as uuidv4 } from "uuid"
 import { motion, AnimatePresence } from "framer-motion"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface Executive {
   id: string
@@ -22,6 +39,172 @@ interface Executive {
 
 interface ExecutivesAdminProps {
   initialExecutives: Executive[]
+}
+
+// Sortable item component
+function SortableExecutiveRow({ executive, onEdit, onDelete, index }: { 
+  executive: Executive, 
+  onEdit: (executive: Executive) => void, 
+  onDelete: (id: string) => void,
+  index: number
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: executive.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1 : 0,
+    position: 'relative' as 'relative',
+  }
+
+  return (
+    <tr 
+      ref={setNodeRef} 
+      style={style}
+      className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150"
+    >
+      <td className="px-3 sm:px-6 py-4">
+        <div className="flex items-center">
+          <button 
+            className="cursor-grab active:cursor-grabbing p-1 mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="h-5 w-5" />
+          </button>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span>
+        </div>
+      </td>
+      <td className="px-3 sm:px-6 py-4">
+        <div className="flex items-center">
+          {executive.image_url && (
+            <div className="flex-shrink-0 h-10 w-10 mr-3">
+              <img 
+                src={executive.image_url || "/placeholder.svg"} 
+                alt={executive.name} 
+                className="h-10 w-10 rounded-full object-cover"
+              />
+            </div>
+          )}
+          <div className="text-sm font-medium text-gray-900 dark:text-white">{executive.name}</div>
+        </div>
+      </td>
+      <td className="px-3 sm:px-6 py-4">
+        <div className="text-sm text-gray-500 dark:text-gray-400">{executive.position}</div>
+      </td>
+      <td className="hidden md:table-cell px-3 sm:px-6 py-4">
+        <div className="text-sm text-gray-500 dark:text-gray-400">{executive.email}</div>
+      </td>
+      <td className="px-3 sm:px-6 py-4 text-sm font-medium">
+        <div className="flex space-x-3">
+          <button
+            onClick={() => onEdit(executive)}
+            className="inline-flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            title="Edit executive"
+          >
+            <Pencil className="h-4 w-4" />
+            <span className="sr-only">Edit</span>
+          </button>
+          <button
+            onClick={() => onDelete(executive.id)}
+            className="inline-flex items-center text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+            title="Delete executive"
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="sr-only">Delete</span>
+          </button>
+        </div>
+      </td>
+    </tr>
+  )
+}
+
+// Mobile sortable item
+function SortableExecutiveCard({ executive, onEdit, onDelete, index }: { 
+  executive: Executive, 
+  onEdit: (executive: Executive) => void, 
+  onDelete: (id: string) => void,
+  index: number
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: executive.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1 : 0,
+    position: 'relative' as 'relative',
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex items-center">
+          <button 
+            className="cursor-grab active:cursor-grabbing p-1 mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="h-5 w-5" />
+          </button>
+          <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">{index + 1}</span>
+          {executive.image_url && (
+            <div className="flex-shrink-0 h-10 w-10 mr-3">
+              <img 
+                src={executive.image_url || "/placeholder.svg"} 
+                alt={executive.name} 
+                className="h-10 w-10 rounded-full object-cover"
+              />
+            </div>
+          )}
+          <div>
+            <h3 className="font-medium text-gray-900 dark:text-white">{executive.name}</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{executive.position}</p>
+          </div>
+        </div>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => onEdit(executive)}
+            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            title="Edit executive"
+          >
+            <Pencil className="h-4 w-4" />
+            <span className="sr-only">Edit</span>
+          </button>
+          <button
+            onClick={() => onDelete(executive.id)}
+            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+            title="Delete executive"
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="sr-only">Delete</span>
+          </button>
+        </div>
+      </div>
+      <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <p className="truncate">{executive.email}</p>
+      </div>
+    </div>
+  )
 }
 
 export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminProps) {
@@ -47,6 +230,18 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
     updated_at: new Date().toISOString(),
   })
   const [imageFile, setImageFile] = useState<File | null>(null)
+
+  // Set up sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement required before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
 
   useEffect(() => {
     // Fetch executives with order on initial load
@@ -247,35 +442,31 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
     }
   }
 
-  const handleOrderChange = async (executiveId: string, direction: 'up' | 'down') => {
-    const executiveIndex = executives.findIndex(exec => exec.id === executiveId);
-    if (
-      (direction === 'up' && executiveIndex === 0) || 
-      (direction === 'down' && executiveIndex === executives.length - 1)
-    ) {
-      return; // Can't move first item up or last item down
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      setExecutives((items) => {
+        // Find the indices of the items
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        
+        // Create a new array with the updated order
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        
+        // Update filtered executives if search is active
+        if (searchTerm) {
+          setFilteredExecutives((filtered) => {
+            const filteredOldIndex = filtered.findIndex((item) => item.id === active.id);
+            const filteredNewIndex = filtered.findIndex((item) => item.id === over.id);
+            return arrayMove(filtered, filteredOldIndex, filteredNewIndex);
+          });
+        }
+        
+        return newItems;
+      });
     }
-
-    const newExecutives = [...executives];
-    const swapIndex = direction === 'up' ? executiveIndex - 1 : executiveIndex + 1;
-    
-    // Swap the display_order of the two executives
-    const tempOrder = newExecutives[executiveIndex].display_order;
-    newExecutives[executiveIndex].display_order = newExecutives[swapIndex].display_order;
-    newExecutives[swapIndex].display_order = tempOrder;
-    
-    // Swap the positions in the array
-    [newExecutives[executiveIndex], newExecutives[swapIndex]] = 
-    [newExecutives[swapIndex], newExecutives[executiveIndex]];
-    
-    setExecutives(newExecutives);
-    setFilteredExecutives(newExecutives.filter(
-      (executive) =>
-        executive.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        executive.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        executive.email.toLowerCase().includes(searchTerm.toLowerCase())
-    ));
-  }
+  };
 
   const saveOrderChanges = async () => {
     setLoading(true);
@@ -418,57 +609,83 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
               {/* Mobile card view */}
               <div className="block sm:hidden">
                 <div className="space-y-3 px-4">
-                  {filteredExecutives.map((executive) => (
-                    <motion.div
-                      key={executive.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"
+                  {reorderMode ? (
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center">
-                          {executive.image_url && (
-                            <div className="flex-shrink-0 h-10 w-10 mr-3">
-                              <img 
-                                src={executive.image_url || "/placeholder.svg"} 
-                                alt={executive.name} 
-                                className="h-10 w-10 rounded-full object-cover"
-                              />
-                            </div>
-                          )}
-                          <div>
-                            <h3 className="font-medium text-gray-900 dark:text-white">{executive.name}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{executive.position}</p>
-                          </div>
-                        </div>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => {
-                              setCurrentExecutive(executive)
+                      <SortableContext
+                        items={filteredExecutives.map(exec => exec.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {filteredExecutives.map((executive, index) => (
+                          <SortableExecutiveCard
+                            key={executive.id}
+                            executive={executive}
+                            onEdit={(exec) => {
+                              setCurrentExecutive(exec)
                               setIsModalOpen(true)
                             }}
-                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-                            title="Edit executive"
-                          >
-                            <Pencil className="h-4 w-4" />
-                            <span className="sr-only">Edit</span>
-                          </button>
-                          <button
-                            onClick={() => handleDelete(executive.id)}
-                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                            title="Delete executive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete</span>
-                          </button>
+                            onDelete={handleDelete}
+                            index={index}
+                          />
+                        ))}
+                      </SortableContext>
+                    </DndContext>
+                  ) : (
+                    filteredExecutives.map((executive) => (
+                      <motion.div
+                        key={executive.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center">
+                            {executive.image_url && (
+                              <div className="flex-shrink-0 h-10 w-10 mr-3">
+                                <img 
+                                  src={executive.image_url || "/placeholder.svg"} 
+                                  alt={executive.name} 
+                                  className="h-10 w-10 rounded-full object-cover"
+                                />
+                              </div>
+                            )}
+                            <div>
+                              <h3 className="font-medium text-gray-900 dark:text-white">{executive.name}</h3>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{executive.position}</p>
+                            </div>
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => {
+                                setCurrentExecutive(executive)
+                                setIsModalOpen(true)
+                              }}
+                              className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                              title="Edit executive"
+                            >
+                              <Pencil className="h-4 w-4" />
+                              <span className="sr-only">Edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleDelete(executive.id)}
+                              className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                              title="Delete executive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span className="sr-only">Delete</span>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                        <p className="truncate">{executive.email}</p>
-                      </div>
-                    </motion.div>
-                  ))}
+                        <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                          <p className="truncate">{executive.email}</p>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -487,84 +704,85 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {filteredExecutives.map((executive, index) => (
-                      <motion.tr 
-                        key={executive.id} 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150"
+                    {reorderMode ? (
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
                       >
-                        {reorderMode && (
-                          <td className="px-3 sm:px-6 py-4">
-                            <div className="flex items-center space-x-2">
-                              <button 
-                                onClick={() => handleOrderChange(executive.id, 'up')}
-                                disabled={index === 0}
-                                className={`p-1 rounded ${index === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
-                                </svg>
-                              </button>
-                              <button 
-                                onClick={() => handleOrderChange(executive.id, 'down')}
-                                disabled={index === filteredExecutives.length - 1}
-                                className={`p-1 rounded ${index === filteredExecutives.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                </svg>
-                              </button>
-                              <span className="text-sm text-gray-500 dark:text-gray-400">{index + 1}</span>
-                            </div>
-                          </td>
-                        )}
-                        <td className="px-3 sm:px-6 py-4">
-                          <div className="flex items-center">
-                            {executive.image_url && (
-                              <div className="flex-shrink-0 h-10 w-10 mr-3">
-                                <img 
-                                  src={executive.image_url || "/placeholder.svg"} 
-                                  alt={executive.name} 
-                                  className="h-10 w-10 rounded-full object-cover"
-                                />
-                              </div>
-                            )}
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">{executive.name}</div>
-                          </div>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4">
-                          <div className="text-sm text-gray-500 dark:text-gray-400">{executive.position}</div>
-                        </td>
-                        <td className="hidden md:table-cell px-3 sm:px-6 py-4">
-                          <div className="text-sm text-gray-500 dark:text-gray-400">{executive.email}</div>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 text-sm font-medium">
-                          <div className="flex space-x-3">
-                            <button
-                              onClick={() => {
-                                setCurrentExecutive(executive)
+                        <SortableContext
+                          items={filteredExecutives.map(exec => exec.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {filteredExecutives.map((executive, index) => (
+                            <SortableExecutiveRow
+                              key={executive.id}
+                              executive={executive}
+                              onEdit={(exec) => {
+                                setCurrentExecutive(exec)
                                 setIsModalOpen(true)
                               }}
-                              className="inline-flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-                              title="Edit executive"
-                            >
-                              <Pencil className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
-                            </button>
-                            <button
-                              onClick={() => handleDelete(executive.id)}
-                              className="inline-flex items-center text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                              title="Delete executive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              <span className="sr-only">Delete</span>
-                            </button>
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))}
+                              onDelete={handleDelete}
+                              index={index}
+                            />
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    ) : (
+                      filteredExecutives.map((executive, index) => (
+                        <motion.tr 
+                          key={executive.id} 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150"
+                        >
+                          <td className="px-3 sm:px-6 py-4">
+                            <div className="flex items-center">
+                              {executive.image_url && (
+                                <div className="flex-shrink-0 h-10 w-10 mr-3">
+                                  <img 
+                                    src={executive.image_url || "/placeholder.svg"} 
+                                    alt={executive.name} 
+                                    className="h-10 w-10 rounded-full object-cover"
+                                  />
+                                </div>
+                              )}
+                              <div className="text-sm font-medium text-gray-900 dark:text-white">{executive.name}</div>
+                            </div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{executive.position}</div>
+                          </td>
+                          <td className="hidden md:table-cell px-3 sm:px-6 py-4">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{executive.email}</div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 text-sm font-medium">
+                            <div className="flex space-x-3">
+                              <button
+                                onClick={() => {
+                                  setCurrentExecutive(executive)
+                                  setIsModalOpen(true)
+                                }}
+                                className="inline-flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                                title="Edit executive"
+                              >
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDelete(executive.id)}
+                                className="inline-flex items-center text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                title="Delete executive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Delete</span>
+                              </button>
+                            </div>
+                          </td>
+                        </motion.tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -767,3 +985,4 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
     </div>
   )
 }
+
