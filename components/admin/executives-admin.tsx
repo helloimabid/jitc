@@ -617,7 +617,7 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
             </div>
             <p className="text-sm">
               <strong>Reorder Mode:</strong> Drag the executives to change their display order. Click "Save Order" when
-              you're done.
+              you're done.(if you can't drag and drop in your device change the display order manually by the edit option.)
             </p>
           </div>
         </div>
