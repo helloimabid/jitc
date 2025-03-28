@@ -40,35 +40,35 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
     const fetchNotifications = async () => {
       try {
         const supabase = createClient()
-        
+
         // Get unread contact submissions count
         const { data: contactData, error: contactError } = await supabase
           .from("contact_submissions")
           .select("id")
           .eq("is_read", false)
-        
+
         if (contactError) {
           console.error("Contact data fetch error:", contactError)
           throw contactError
         }
-        
+
         const unreadCount = contactData?.length || 0
         setUnreadContacts(unreadCount)
-        
+
         // Get pending join submissions count
         const { data: joinData, error: joinError } = await supabase
           .from("join_submissions")
           .select("id")
           .eq("status", "pending")
-        
+
         if (joinError) {
-          console.error("Join data fetch error:", joinError)  
+          console.error("Join data fetch error:", joinError)
           throw joinError
         }
-        
+
         const pendingCount = joinData?.length || 0
         setPendingJoins(pendingCount)
-        
+
         // Set total notifications
         setTotalNotifications(unreadCount + pendingCount)
       } catch (error) {
@@ -77,34 +77,34 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
     }
 
     fetchNotifications()
-    
+
     // Refresh notifications every 30 seconds
     const interval = setInterval(fetchNotifications, 30000)
-    
+
     // Check if sidebar preference is stored
-    const savedCollapsed = localStorage.getItem('adminSidebarCollapsed')
+    const savedCollapsed = localStorage.getItem("adminSidebarCollapsed")
     if (savedCollapsed) {
-      setCollapsed(savedCollapsed === 'true')
+      setCollapsed(savedCollapsed === "true")
     }
-    
+
     // Handle window resize
     const handleResize = () => {
       // Lower breakpoint to 1020px for more responsive behavior
       const isMobileView = window.innerWidth < 1024
       setIsMobile(isMobileView)
-      
+
       if (isMobileView) {
         setCollapsed(true)
         setMobileOpen(false)
       }
     }
-    
+
     // Initial check
     handleResize()
-    
-    window.addEventListener('resize', handleResize)
+
+    window.addEventListener("resize", handleResize)
     return () => {
-      window.removeEventListener('resize', handleResize)
+      window.removeEventListener("resize", handleResize)
       clearInterval(interval)
     }
   }, [])
@@ -162,7 +162,7 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
     {
       href: "/admin/settings",
       icon: Settings,
-      name: "Settings"
+      name: "Settings",
     },
   ]
 
@@ -177,18 +177,18 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
   const handleSignOut = async () => {
     try {
       const supabase = createClient()
-      
+
       await supabase.auth.signOut()
-      
-      await fetch('/api/auth/signout', {
-        method: 'POST',
-        credentials: 'include'
+
+      await fetch("/api/auth/signout", {
+        method: "POST",
+        credentials: "include",
       })
-      
-      router.push('/login')
-      
+
+      router.push("/login")
+
       setTimeout(() => {
-        window.location.href = '/login'
+        window.location.href = "/login"
       }, 100)
     } catch (error) {
       console.error("Error signing out:", error)
@@ -200,8 +200,8 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
       {/* Mobile/Tablet menu button */}
       <button
         onClick={toggleSidebar}
-        className={`fixed top-4 right-4 z-50 ${
-          isMobile ? 'block' : 'hidden'
+        className={`fixed top-4 left-4 z-50 ${
+          isMobile ? "block" : "hidden"
         } bg-primary text-white p-2 rounded-lg shadow-md hover:bg-primary/90 transition-colors`}
         aria-label={mobileOpen ? "Close menu" : "Open menu"}
       >
@@ -217,7 +217,7 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+              className="fixed inset-0 bg-black/50 z-40"
             />
           )}
         </AnimatePresence>
@@ -228,18 +228,18 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
         <motion.div
           initial={false}
           animate={{
-            width: isMobile
-              ? mobileOpen
-                ? "240px"
-                : "0px"
-              : collapsed
-              ? "70px"
-              : "240px",
+            width: isMobile ? (mobileOpen ? "240px" : "0px") : collapsed ? "70px" : "240px",
             x: isMobile && !mobileOpen ? "-100%" : 0,
           }}
           transition={{ duration: 0.2 }}
-          className={`fixed inset-y-0 left-0 z-10 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-sm transition-transform duration-300 transform ${
-            isMobile ? (mobileOpen ? "translate-x-0" : "-translate-x-full") : collapsed ? "translate-x-0" : "translate-x-0"
+          className={`fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-sm transition-transform duration-300 transform ${
+            isMobile
+              ? mobileOpen
+                ? "translate-x-0"
+                : "-translate-x-full"
+              : collapsed
+                ? "translate-x-0"
+                : "translate-x-0"
           }`}
         >
           <div className="flex flex-col h-full">
@@ -277,17 +277,15 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
                       <Link
                         href={link.href}
                         className={`flex items-center px-3 py-2 rounded-lg transition-colors 
-                          ${isActive
-                            ? "bg-primary text-primary-foreground"
-                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                          ${
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                           }`}
                       >
                         <link.icon
                           size={20}
-                          className={isActive 
-                            ? "text-primary-foreground" 
-                            : "text-gray-500 dark:text-gray-400"
-                          }
+                          className={isActive ? "text-primary-foreground" : "text-gray-500 dark:text-gray-400"}
                         />
                         {(!collapsed || isMobile) && (
                           <motion.span
@@ -317,7 +315,9 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
             </nav>
 
             {/* Sidebar footer */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+            <div
+              className={`p-4 border-t border-gray-200 dark:border-gray-800 ${collapsed && !isMobile ? "hidden" : "block"}`}
+            >
               <button
                 onClick={handleSignOut}
                 className="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 w-full group"
@@ -332,14 +332,9 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
 
       {/* Main content wrapper - adds margin to prevent content from going under sidebar */}
       <div
-        className={`transition-all duration-200 ${
-          isMobile
-            ? "ml-0"
-            : collapsed
-            ? "lg:ml-[70px]"
-            : "lg:ml-[240px]"
-        }`}
+        className={`transition-all duration-200 ${isMobile ? "ml-0" : collapsed ? "lg:ml-[70px]" : "lg:ml-[240px]"}`}
       />
     </>
   )
 }
+
