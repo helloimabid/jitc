@@ -166,7 +166,7 @@ export default function Hero() {
                       type="text"
                       id="cmd-input"
                       className="flex-1 bg-transparent border-none outline-none text-green-400 ml-2 focus:ring-0"
-                      placeholder="Type a command... Type 'help' for more info"
+                      placeholder="Type 'help' for more info..."
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           const input = e.currentTarget.value.trim().toLowerCase()
