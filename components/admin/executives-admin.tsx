@@ -1,8 +1,10 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase"
-import { Pencil, Trash2, Plus, Check, X, AlertCircle, Upload, Search, User, GripVertical } from 'lucide-react'
+import { Pencil, Trash2, Plus, X, AlertCircle, Upload, Search, User, GripVertical } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -12,16 +14,16 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent
-} from '@dnd-kit/core'
+  type DragEndEvent,
+} from "@dnd-kit/core"
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  verticalListSortingStrategy
-} from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 interface Executive {
   id: string
@@ -42,38 +44,36 @@ interface ExecutivesAdminProps {
 }
 
 // Sortable item component
-function SortableExecutiveRow({ executive, onEdit, onDelete, index }: { 
-  executive: Executive, 
-  onEdit: (executive: Executive) => void, 
-  onDelete: (id: string) => void,
+function SortableExecutiveRow({
+  executive,
+  onEdit,
+  onDelete,
+  index,
+}: {
+  executive: Executive
+  onEdit: (executive: Executive) => void
+  onDelete: (id: string) => void
   index: number
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id: executive.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: executive.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1 : 0,
-    position: 'relative' as 'relative',
+    position: "relative" as const,
   }
 
   return (
-    <tr 
-      ref={setNodeRef} 
+    <tr
+      ref={setNodeRef}
       style={style}
       className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150"
     >
       <td className="px-3 sm:px-6 py-4">
         <div className="flex items-center">
-          <button 
+          <button
             className="cursor-grab active:cursor-grabbing p-1 mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             {...attributes}
             {...listeners}
@@ -87,9 +87,9 @@ function SortableExecutiveRow({ executive, onEdit, onDelete, index }: {
         <div className="flex items-center">
           {executive.image_url && (
             <div className="flex-shrink-0 h-10 w-10 mr-3">
-              <img 
-                src={executive.image_url || "/placeholder.svg"} 
-                alt={executive.name} 
+              <img
+                src={executive.image_url || "/placeholder.svg"}
+                alt={executive.name}
                 className="h-10 w-10 rounded-full object-cover"
               />
             </div>
@@ -128,50 +128,49 @@ function SortableExecutiveRow({ executive, onEdit, onDelete, index }: {
 }
 
 // Mobile sortable item
-function SortableExecutiveCard({ executive, onEdit, onDelete, index }: { 
-  executive: Executive, 
-  onEdit: (executive: Executive) => void, 
-  onDelete: (id: string) => void,
+function SortableExecutiveCard({
+  executive,
+  onEdit,
+  onDelete,
+  index,
+}: {
+  executive: Executive
+  onEdit: (executive: Executive) => void
+  onDelete: (id: string) => void
   index: number
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id: executive.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: executive.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1 : 0,
-    position: 'relative' as 'relative',
+    zIndex: isDragging ? 10 : 0, // Increased z-index for dragging
+    position: "relative" as const,
   }
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"
+      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-3"
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center">
-          <button 
-            className="cursor-grab active:cursor-grabbing p-1 mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          <button
+            className="touch-manipulation cursor-grab active:cursor-grabbing p-2 mr-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-md"
             {...attributes}
             {...listeners}
+            aria-label="Drag to reorder"
           >
-            <GripVertical className="h-5 w-5" />
+            <GripVertical className="h-6 w-6" />
           </button>
           <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">{index + 1}</span>
           {executive.image_url && (
             <div className="flex-shrink-0 h-10 w-10 mr-3">
-              <img 
-                src={executive.image_url || "/placeholder.svg"} 
-                alt={executive.name} 
+              <img
+                src={executive.image_url || "/placeholder.svg"}
+                alt={executive.name}
                 className="h-10 w-10 rounded-full object-cover"
               />
             </div>
@@ -235,12 +234,13 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement required before drag starts
+        distance: 5, // Reduced distance to start dragging on mobile
+        tolerance: 5, // Added tolerance for better touch interaction
       },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   )
 
   useEffect(() => {
@@ -252,13 +252,10 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
     setLoading(true)
     try {
       const supabase = createClient()
-      const { data, error } = await supabase
-        .from("executives")
-        .select("*")
-        .order('display_order', { ascending: true })
-      
+      const { data, error } = await supabase.from("executives").select("*").order("display_order", { ascending: true })
+
       if (error) throw error
-      
+
       setExecutives(data || [])
       setFilteredExecutives(data || [])
     } catch (err: any) {
@@ -274,10 +271,10 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
       (executive) =>
         executive.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         executive.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        executive.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredExecutives(filtered);
-  }, [searchTerm, executives]);
+        executive.email.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+    setFilteredExecutives(filtered)
+  }, [searchTerm, executives])
 
   const handleOpenModal = () => {
     setCurrentExecutive({
@@ -345,9 +342,7 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
       if (imageFile) {
         const fileExt = imageFile.name.split(".").pop()
         const fileName = `${uuidv4()}.${fileExt}`
-        const { error: uploadError, data } = await supabase.storage
-          .from("executive-images")
-          .upload(fileName, imageFile)
+        const { error: uploadError, data } = await supabase.storage.from("executive-images").upload(fileName, imageFile)
 
         if (uploadError) throw uploadError
 
@@ -362,28 +357,26 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
 
       if (currentExecutive.id) {
         // Update existing executive
-        const { error } = await supabase
-          .from("executives")
-          .update(updatedExecutive)
-          .eq("id", currentExecutive.id)
+        const { error } = await supabase.from("executives").update(updatedExecutive).eq("id", currentExecutive.id)
 
         if (error) throw error
 
         setSuccessMessage("Executive updated successfully!")
-        setExecutives(
-          executives.map((exec) => (exec.id === currentExecutive.id ? updatedExecutive : exec))
-        )
+        setExecutives(executives.map((exec) => (exec.id === currentExecutive.id ? updatedExecutive : exec)))
         setFilteredExecutives(
-          filteredExecutives.map((exec) => (exec.id === currentExecutive.id ? updatedExecutive : exec))
+          filteredExecutives.map((exec) => (exec.id === currentExecutive.id ? updatedExecutive : exec)),
         )
       } else {
         // Get the highest display_order
-        const maxOrderExec = executives.reduce((prev, current) => {
-          return (prev.display_order || 0) > (current.display_order || 0) ? prev : current;
-        }, { display_order: 0 } as Executive);
-        
-        const nextOrder = (maxOrderExec.display_order || 0) + 1;
-        
+        const maxOrderExec = executives.reduce(
+          (prev, current) => {
+            return (prev.display_order || 0) > (current.display_order || 0) ? prev : current
+          },
+          { display_order: 0 } as Executive,
+        )
+
+        const nextOrder = (maxOrderExec.display_order || 0) + 1
+
         // Create new executive
         const newExecutive = {
           ...updatedExecutive,
@@ -429,7 +422,7 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
         setSuccessMessage("Executive deleted successfully!")
         setExecutives(executives.filter((exec) => exec.id !== id))
         setFilteredExecutives(filteredExecutives.filter((exec) => exec.id !== id))
-        
+
         // Auto-dismiss success message after 3 seconds
         setTimeout(() => {
           setSuccessMessage(null)
@@ -443,64 +436,75 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    
+    const { active, over } = event
+
     if (over && active.id !== over.id) {
       setExecutives((items) => {
         // Find the indices of the items
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        
+        const activeIndex = items.findIndex((item) => item.id === active.id)
+        const overIndex = items.findIndex((item) => item.id === over.id)
+
         // Create a new array with the updated order
-        const newItems = arrayMove(items, oldIndex, newIndex);
-        
+        const newItems = arrayMove(items, activeIndex, overIndex)
+
+        // Update the display_order property for all items
+        const updatedItems = newItems.map((item, index) => ({
+          ...item,
+          display_order: index,
+        }))
+
         // Update filtered executives if search is active
         if (searchTerm) {
           setFilteredExecutives((filtered) => {
-            const filteredOldIndex = filtered.findIndex((item) => item.id === active.id);
-            const filteredNewIndex = filtered.findIndex((item) => item.id === over.id);
-            return arrayMove(filtered, filteredOldIndex, filteredNewIndex);
-          });
+            const filteredOldIndex = filtered.findIndex((item) => item.id === active.id)
+            const filteredNewIndex = filtered.findIndex((item) => item.id === over.id)
+            const newFiltered = arrayMove(filtered, filteredOldIndex, filteredNewIndex)
+
+            // Update display_order in filtered list
+            return newFiltered.map((item) => {
+              const fullItem = updatedItems.find((exec) => exec.id === item.id)
+              return fullItem ? { ...item, display_order: fullItem.display_order } : item
+            })
+          })
         }
-        
-        return newItems;
-      });
+
+        return updatedItems
+      })
     }
-  };
+  }
 
   const saveOrderChanges = async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
     try {
-      const supabase = createClient();
-      
+      const supabase = createClient()
+
       // Update each executive with their new display_order
       const updates = executives.map((executive, index) => ({
         id: executive.id,
-        display_order: index
-      }));
-      
+        display_order: index,
+      }))
+
       for (const update of updates) {
         const { error } = await supabase
-          .from('executives')
+          .from("executives")
           .update({ display_order: update.display_order })
-          .eq('id', update.id);
-          
-        if (error) throw error;
+          .eq("id", update.id)
+
+        if (error) throw error
       }
-      
-      setSuccessMessage("Display order saved successfully!");
-      setReorderMode(false);
-      
+
+      setSuccessMessage("Display order saved successfully!")
+      setReorderMode(false)
+
       // Auto-dismiss success message after 3 seconds
       setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
-      
+        setSuccessMessage(null)
+      }, 3000)
     } catch (err: any) {
-      setError(err.message || "Failed to update display order");
+      setError(err.message || "Failed to update display order")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -508,21 +512,21 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
     <div className="w-full max-w-full">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Executives</h2>
-        
+
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-4 w-4 text-gray-500" />
             </div>
-            <input 
-              type="text" 
-              placeholder="Search executives..." 
+            <input
+              type="text"
+              placeholder="Search executives..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
-          
+
           {reorderMode ? (
             <div className="flex gap-2">
               <button
@@ -560,7 +564,7 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
 
       <AnimatePresence>
         {error && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -570,14 +574,18 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
               <AlertCircle className="h-5 w-5 mr-2" />
               <span>{error}</span>
             </div>
-            <button onClick={() => setError(null)} className="text-red-700 dark:text-red-400 hover:text-red-900" title="Dismiss error">
+            <button
+              onClick={() => setError(null)}
+              className="text-red-700 dark:text-red-400 hover:text-red-900"
+              title="Dismiss error"
+            >
               <X className="h-5 w-5" />
             </button>
           </motion.div>
         )}
 
         {successMessage && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -608,29 +616,31 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
             <div className="sm:overflow-x-auto -mx-4 sm:mx-0">
               {/* Mobile card view */}
               <div className="block sm:hidden">
-                <div className="space-y-3 px-4">
+                <div className="space-y-0 px-4">
+                  {" "}
+                  {/* Changed from space-y-3 to space-y-0 */}
                   {reorderMode ? (
-                    <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragEnd={handleDragEnd}
-                    >
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                       <SortableContext
-                        items={filteredExecutives.map(exec => exec.id)}
+                        items={filteredExecutives.map((exec) => exec.id)}
                         strategy={verticalListSortingStrategy}
                       >
-                        {filteredExecutives.map((executive, index) => (
-                          <SortableExecutiveCard
-                            key={executive.id}
-                            executive={executive}
-                            onEdit={(exec) => {
-                              setCurrentExecutive(exec)
-                              setIsModalOpen(true)
-                            }}
-                            onDelete={handleDelete}
-                            index={index}
-                          />
-                        ))}
+                        <div className="space-y-0">
+                          {" "}
+                          {/* Added container div */}
+                          {filteredExecutives.map((executive, index) => (
+                            <SortableExecutiveCard
+                              key={executive.id}
+                              executive={executive}
+                              onEdit={(exec) => {
+                                setCurrentExecutive(exec)
+                                setIsModalOpen(true)
+                              }}
+                              onDelete={handleDelete}
+                              index={index}
+                            />
+                          ))}
+                        </div>
                       </SortableContext>
                     </DndContext>
                   ) : (
@@ -646,9 +656,9 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                           <div className="flex items-center">
                             {executive.image_url && (
                               <div className="flex-shrink-0 h-10 w-10 mr-3">
-                                <img 
-                                  src={executive.image_url || "/placeholder.svg"} 
-                                  alt={executive.name} 
+                                <img
+                                  src={executive.image_url || "/placeholder.svg"}
+                                  alt={executive.name}
                                   className="h-10 w-10 rounded-full object-cover"
                                 />
                               </div>
@@ -695,23 +705,44 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                   <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
                       {reorderMode && (
-                        <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order</th>
+                        <th
+                          scope="col"
+                          className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        >
+                          Order
+                        </th>
                       )}
-                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Position</th>
-                      <th scope="col" className="hidden md:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                      <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                      <th
+                        scope="col"
+                        className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Name
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Position
+                      </th>
+                      <th
+                        scope="col"
+                        className="hidden md:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Email
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      >
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {reorderMode ? (
-                      <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleDragEnd}
-                      >
+                      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext
-                          items={filteredExecutives.map(exec => exec.id)}
+                          items={filteredExecutives.map((exec) => exec.id)}
                           strategy={verticalListSortingStrategy}
                         >
                           {filteredExecutives.map((executive, index) => (
@@ -730,8 +761,8 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                       </DndContext>
                     ) : (
                       filteredExecutives.map((executive, index) => (
-                        <motion.tr 
-                          key={executive.id} 
+                        <motion.tr
+                          key={executive.id}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
@@ -741,9 +772,9 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                             <div className="flex items-center">
                               {executive.image_url && (
                                 <div className="flex-shrink-0 h-10 w-10 mr-3">
-                                  <img 
-                                    src={executive.image_url || "/placeholder.svg"} 
-                                    alt={executive.name} 
+                                  <img
+                                    src={executive.image_url || "/placeholder.svg"}
+                                    alt={executive.name}
                                     className="h-10 w-10 rounded-full object-cover"
                                   />
                                 </div>
@@ -794,9 +825,17 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0" onClick={(e) => e.stopPropagation()}>
-              <motion.div 
+          <div
+            className="fixed inset-0 z-50 overflow-y-auto"
+            aria-labelledby="modal-title"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -805,9 +844,11 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                 onClick={handleCloseModal}
               ></motion.div>
 
-              <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-              
-              <motion.div 
+              <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+                &#8203;
+              </span>
+
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -827,7 +868,7 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                     <X className="h-5 w-5" />
                   </button>
                 </div>
-                
+
                 <div className="max-h-[70vh] overflow-y-auto p-4 sm:p-6">
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -898,7 +939,7 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                         {(imageFile || currentExecutive.image_url) && (
                           <div className="flex-shrink-0">
                             <img
-                              src={imageFile ? URL.createObjectURL(imageFile) : currentExecutive.image_url || ''}
+                              src={imageFile ? URL.createObjectURL(imageFile) : currentExecutive.image_url || ""}
                               alt="Preview"
                               className="h-16 w-16 rounded-full object-cover border border-gray-300 dark:border-gray-700"
                             />
@@ -907,27 +948,30 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                         <label className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                           <Upload className="mr-2 h-4 w-4" />
                           Choose File
-                          <input 
-                            type="file" 
-                            id="image" 
-                            name="image" 
-                            accept="image/*" 
-                            onChange={handleImageChange} 
-                            className="sr-only" 
+                          <input
+                            type="file"
+                            id="image"
+                            name="image"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="sr-only"
                           />
                         </label>
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="github_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label
+                        htmlFor="github_url"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
                         Facebook URL
                       </label>
                       <input
                         type="url"
                         id="github_url"
                         name="github_url"
-                        value={currentExecutive.github_url || ''}
+                        value={currentExecutive.github_url || ""}
                         onChange={handleInputChange}
                         className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2"
                         placeholder="eg: https://www.facebook.com/username"
@@ -935,14 +979,17 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                     </div>
 
                     <div>
-                      <label htmlFor="linkedin_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label
+                        htmlFor="linkedin_url"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
                         Instagram URL
                       </label>
                       <input
                         type="url"
                         id="linkedin_url"
                         name="linkedin_url"
-                        value={currentExecutive.linkedin_url || ''}
+                        value={currentExecutive.linkedin_url || ""}
                         onChange={handleInputChange}
                         className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2"
                         placeholder="eg: https://www.instagram.com/username"
@@ -964,9 +1011,25 @@ export default function ExecutivesAdmin({ initialExecutives }: ExecutivesAdminPr
                       >
                         {loading ? (
                           <>
-                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            <svg
+                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
                             </svg>
                             Processing...
                           </>
