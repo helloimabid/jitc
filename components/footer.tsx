@@ -10,16 +10,16 @@ export default function Footer() {
             <h3 className="text-xl font-bold text-white mb-4">JITC</h3>
             <p className="text-gray-400 mb-4">Josephite IT Club - Evolve Through Tech</p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <Link href="https://www.facebook.com/sjs.jitc" className="text-gray-400 hover:text-primary transition-colors">
                 <Facebook size={20} />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <Link href="https://www.instagram.com/jitc.official/" className="text-gray-400 hover:text-primary transition-colors">
                 <Instagram size={20} />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <Link href="https://www.github.com/jitc" className="text-gray-400 hover:text-primary transition-colors">
                 <Github size={20} />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <Link href="https://www.linkdin.com/jitc" className="text-gray-400 hover:text-primary transition-colors">
                 <Mail size={20} />
               </Link>
             </div>
