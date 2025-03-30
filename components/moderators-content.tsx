@@ -81,22 +81,22 @@ export default function ModeratorsContent() {
                   <div className="flex space-x-4">
                     {moderator.facebook_url && (
                       <a
-                        href={moderator.github_url}
+                        href={moderator.facebook_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-400 hover:text-primary transition-colors"
-                        title="GitHub"
+                        title="Facebook"
                       >
                         <Facebook size={18} />
                       </a>
                     )}
                     {moderator.instagram_url && (
                       <a
-                        href={moderator.linkedin_url}
+                        href={moderator.instagram_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-400 hover:text-primary transition-colors"
-                        title="Linkedin"
+                        title="Instagram"
                       >
                         <Instagram size={18} />
                       </a>
