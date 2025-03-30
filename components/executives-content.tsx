@@ -84,22 +84,22 @@ export default function ExecutivesContent() {
                   <div className="flex space-x-4">
                     {executive.facebook_url && (
                       <a
-                        href={executive.github_url}
+                        href={executive.facebook_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-400 hover:text-primary transition-colors"
-                        title="GitHub"
+                        title="Facebook"
                       >
                         <Facebook size={18} />
                       </a>
                     )}
                     {executive.instagram_url && (
                       <a
-                        href={executive.linkedin_url}
+                        href={executive.instagram_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-400 hover:text-primary transition-colors"
-                        title="LinkedIn"
+                        title="Instagram"
                       >
                         <Instagram size={18} />
                       </a>
