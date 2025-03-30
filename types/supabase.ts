@@ -53,8 +53,8 @@ export interface Database {
           bio: string
           image_url: string | null
           email: string
-          github_url: string | null
-          linkedin_url: string | null
+          facebook_url: string | null
+          instagram_url: string | null
           created_at: string | null
           updated_at: string | null
         }
@@ -65,8 +65,8 @@ export interface Database {
           bio: string
           image_url?: string | null
           email: string
-          github_url?: string | null
-          linkedin_url?: string | null
+          facebook_url?: string | null
+          instagram_url?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -77,8 +77,8 @@ export interface Database {
           bio?: string
           image_url?: string | null
           email?: string
-          github_url?: string | null
-          linkedin_url?: string | null
+          facebook_url?: string | null
+          instagram_url?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -91,8 +91,8 @@ export interface Database {
           bio: string
           image_url: string | null
           email: string
-          github_url: string | null
-          linkedin_url: string | null
+          facebook_url: string | null
+          instagram_url: string | null
           created_at: string | null
           updated_at: string | null
         }
@@ -103,8 +103,8 @@ export interface Database {
           bio: string
           image_url?: string | null
           email: string
-          github_url?: string | null
-          linkedin_url?: string | null
+          facebook_url?: string | null
+          instagram_url?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -115,8 +115,8 @@ export interface Database {
           bio?: string
           image_url?: string | null
           email?: string
-          github_url?: string | null
-          linkedin_url?: string | null
+          facebook_url?: string | null
+          instagram_url?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
