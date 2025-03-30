@@ -79,7 +79,7 @@ export default function ModeratorsContent() {
                   <p className="text-gray-400 text-sm mb-4">{moderator.bio}</p>
 
                   <div className="flex space-x-4">
-                    {moderator.github_url && (
+                    {moderator.facebook_url && (
                       <a
                         href={moderator.github_url}
                         target="_blank"
@@ -90,7 +90,7 @@ export default function ModeratorsContent() {
                         <Facebook size={18} />
                       </a>
                     )}
-                    {moderator.linkedin_url && (
+                    {moderator.instagram_url && (
                       <a
                         href={moderator.linkedin_url}
                         target="_blank"
