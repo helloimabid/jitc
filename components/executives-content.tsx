@@ -82,7 +82,7 @@ export default function ExecutivesContent() {
                   <p className="text-gray-400 text-sm mb-4">{executive.bio}</p>
 
                   <div className="flex space-x-4">
-                    {executive.github_url && (
+                    {executive.facebook_url && (
                       <a
                         href={executive.github_url}
                         target="_blank"
@@ -93,7 +93,7 @@ export default function ExecutivesContent() {
                         <Facebook size={18} />
                       </a>
                     )}
-                    {executive.linkedin_url && (
+                    {executive.instagram_url && (
                       <a
                         href={executive.linkedin_url}
                         target="_blank"
