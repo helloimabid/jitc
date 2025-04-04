@@ -93,9 +93,9 @@ export default function ContactContent() {
                   <p className="text-gray-400 mt-1">
                     St. Joseph Higher Secondary School
                     <br />
-                    Computer Science Building, Room 203
+                    97 Asad Avenue, Mohammadpur
                     <br />
-                    Campus Address, City, ZIP
+                    Dhaka - 1207
                   </p>
                 </div>
               </div>
@@ -109,7 +109,6 @@ export default function ContactContent() {
                   <p className="text-gray-400 mt-1">
                     jitc@sjs.edu.bd
                     <br />
-                    president.jitc@sjs.edu.bd
                   </p>
                 </div>
               </div>
@@ -135,11 +134,7 @@ export default function ContactContent() {
                 <div className="ml-4">
                   <h3 className="text-white font-medium">Office Hours</h3>
                   <p className="text-gray-400 mt-1">
-                    Monday - Friday: 10:00 AM - 5:00 PM
-                    <br />
-                    Saturday: 10:00 AM - 2:00 PM
-                    <br />
-                    Sunday: Closed
+                    We are always open !!!
                   </p>
                 </div>
               </div>
