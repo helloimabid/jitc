@@ -50,7 +50,7 @@ export default function JoinContent() {
       "ai-ml": false,
       "cybersecurity": false,
       "game-dev": false,
-      "data-science": false,
+      "Media-and-Visuals": false,
       "iot": false,
       "ui-ux": false,
       "logistics": false,
@@ -649,8 +649,8 @@ export default function JoinContent() {
                             checked={formData.interests["data-science"] || false}
                             onCheckedChange={(checked) => handleInterestChange("data-science", checked as boolean)}
                           />
-                          <label htmlFor="data-science" className="text-sm text-gray-300">
-                            Data Science
+                          <label htmlFor="Media-and-Visuals" className="text-sm text-gray-300">
+                            Media and Visuals
                           </label>
                         </div>
                         <div className="flex items-center space-x-2">
