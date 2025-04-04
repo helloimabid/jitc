@@ -646,8 +646,8 @@ export default function JoinContent() {
                           <Checkbox
                             id="data-science"
                             name="data-science"
-                            checked={formData.interests["data-science"] || false}
-                            onCheckedChange={(checked) => handleInterestChange("data-science", checked as boolean)}
+                            checked={formData.interests["Media-and-Visuals"] || false}
+                            onCheckedChange={(checked) => handleInterestChange("Media-and-Visuals", checked as boolean)}
                           />
                           <label htmlFor="Media-and-Visuals" className="text-sm text-gray-300">
                             Media and Visuals
