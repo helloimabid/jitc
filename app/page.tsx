@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Navbar from "@/components/navbar"
 import Hero from "@/components/hero"
+import UpcomingEvents from "@/components/upcoming-events"
 import Terminal from "@/components/terminal"
 import Footer from "@/components/footer"
 import { TerminalLoader } from "@/components/ui/TerminalLoader"
@@ -25,6 +26,7 @@ export default function Home() {
       <Terminal />
       <Navbar />
       <Hero />
+      <UpcomingEvents />
       <Footer />
     </main>
   )
